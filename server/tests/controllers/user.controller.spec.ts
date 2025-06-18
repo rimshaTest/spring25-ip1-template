@@ -112,6 +112,7 @@ describe('Test userController', () => {
       };
 
       const response = await supertest(app).patch('/user/resetPassword').send(mockReqBody);
+      console.log(JSON.stringify(response));
 
       expect(response.status).toBe(400);
       expect(response.text).toEqual('Invalid user body');
@@ -125,6 +126,7 @@ describe('Test userController', () => {
       getUserByUsernameSpy.mockResolvedValueOnce(mockSafeUser);
 
       const response = await supertest(app).get(`/user/getUser/${mockUser.username}`);
+      console.log(JSON.stringify(response));
 
       expect(response.status).toBe(200);
       expect(response.body).toEqual(mockUserJSONResponse);

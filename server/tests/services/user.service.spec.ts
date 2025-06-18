@@ -17,6 +17,11 @@ describe('User model', () => {
     mockingoose.resetAll();
   });
 
+  afterEach(() => {
+    jest.clearAllMocks();
+    mockingoose.resetAll();
+  });
+
   describe('saveUser', () => {
     beforeEach(() => {
       mockingoose.resetAll();
