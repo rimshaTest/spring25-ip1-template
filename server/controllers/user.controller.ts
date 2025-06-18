@@ -1,5 +1,11 @@
 import express, { Response, Router } from 'express';
-import { UserRequest, User, UserCredentials, UserByUsernameRequest, UserResponse } from '../types/types';
+import {
+  UserRequest,
+  User,
+  UserCredentials,
+  UserByUsernameRequest,
+  UserResponse,
+} from '../types/types';
 import {
   deleteUserByUsername,
   getUserByUsername,
@@ -16,11 +22,12 @@ const userController = () => {
    * @param req The incoming request containing user data.
    * @returns `true` if the body contains valid user fields; otherwise, `false`.
    */
-  const isUserBodyValid = (req: UserRequest): boolean => 
-  // TODO: Task 1 - Implement the isUserBodyValid function
-    !!req.body.username && (typeof req.body.username=='string')&&
-    !!req.body.password &&(typeof req.body.password=='string');
-  
+  const isUserBodyValid = (req: UserRequest): boolean =>
+    // TODO: Task 1 - Implement the isUserBodyValid function
+    !!req.body.username &&
+    typeof req.body.username === 'string' &&
+    !!req.body.password &&
+    typeof req.body.password === 'string';
 
   /**
    * Handles the creation of a new user account.
@@ -37,7 +44,7 @@ const userController = () => {
     const user: User = {
       username: req.body.username,
       password: req.body.password,
-      dateJoined: new Date()
+      dateJoined: new Date(),
     };
     try {
       const responsefromdb = await saveUser(user);
@@ -45,21 +52,20 @@ const userController = () => {
       if ('error' in responsefromdb) {
         res.status(500).json({ error: responsefromdb.error });
         return;
-      };
+      }
 
       res.status(200).json({
         _id: responsefromdb._id?.toString(),
         username: responsefromdb.username,
         dateJoined: responsefromdb.dateJoined.toISOString(),
       });
-
     } catch (err: unknown) {
       if (err instanceof Error) {
         res.status(500).json({ error: `Error when saving user: ${err.message}` });
       } else {
         res.status(500).json({ error: 'Error when saving user' });
-      };
-    };
+      }
+    }
   };
 
   /**
@@ -75,7 +81,7 @@ const userController = () => {
       return;
     }
     const user: UserCredentials = req.body;
-    try{
+    try {
       const responsefromdb = await loginUser(user);
       if ('error' in responsefromdb) {
         throw new Error(responsefromdb.error);
@@ -152,13 +158,13 @@ const userController = () => {
    */
   const resetPassword = async (req: UserRequest, res: Response): Promise<void> => {
     // TODO: Task 1 - Implement the resetPassword function
-    const {username, password} = req.body;
+    const { username, password } = req.body;
     if (!isUserBodyValid(req)) {
       res.status(400).send('Invalid user body');
       return;
     }
-    try{
-      const responsefromdb = await updateUser(username, {password});
+    try {
+      const responsefromdb = await updateUser(username, { password });
       if ('error' in responsefromdb) {
         res.status(404).json({ error: responsefromdb.error });
         return;
@@ -167,9 +173,10 @@ const userController = () => {
       const formattedResponse = {
         _id: responsefromdb._id?.toString(),
         username: responsefromdb.username,
-        dateJoined: responsefromdb.dateJoined instanceof Date 
-          ? responsefromdb.dateJoined.toISOString() 
-          : responsefromdb.dateJoined,
+        dateJoined:
+          responsefromdb.dateJoined instanceof Date
+            ? responsefromdb.dateJoined.toISOString()
+            : responsefromdb.dateJoined,
       };
       res.status(200).json(formattedResponse);
     } catch (err: unknown) {

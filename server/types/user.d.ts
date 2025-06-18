@@ -8,8 +8,8 @@ import { ObjectId } from 'mongodb';
  */
 export interface UserCredentials {
   // TODO: Task 1 - Define the properties of the UserCredentials interface
-    username: string;
-    password: string;
+  username: string;
+  password: string;
 }
 
 /**
@@ -21,10 +21,10 @@ export interface UserCredentials {
  */
 export interface User extends UserCredentials {
   // TODO: Task 1 - Define the properties of the User interface
-    _id?: ObjectId;
-    username: string;
-    password: string;
-    dateJoined: Date;
+  _id?: ObjectId;
+  username: string;
+  password: string;
+  dateJoined: Date;
 }
 
 /**
@@ -38,7 +38,7 @@ export interface UserRequest extends Request {
   body: {
     username: string;
     password: string;
-  }
+  };
 }
 
 /**
@@ -50,7 +50,7 @@ export interface UserByUsernameRequest extends Request {
   // TODO: Task 1 - Define the properties of the UserByUsernameRequest interface
   body: {
     username: string;
-  }
+  };
 }
 
 /**

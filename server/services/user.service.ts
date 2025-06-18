@@ -12,12 +12,12 @@ export const saveUser = async (user: User): Promise<UserResponse> => {
   try {
     const res = await UserModel.create(user);
     const plainUser = res.toObject();
-    const { password: _pw, ...safeUser } = plainUser;
+    const { ...safeUser } = plainUser;
     return safeUser;
   } catch (error) {
     return { error: 'Error when saving a user' };
   }
-}
+};
 
 /**
  * Retrieves a user from the database by their username.
@@ -31,16 +31,15 @@ export const getUserByUsername = async (username: string): Promise<UserResponse>
     if (!user) {
       return { error: 'User not found' };
     }
-    const { password, ...safeUser } = user;
+    const { ...safeUser } = user;
     return safeUser;
   } catch (err: unknown) {
     if (err instanceof Error) {
       return { error: `Error when fetching user by username: ${err.message}` };
-    } else {
-      return { error: 'Error when fetching user by username' };
     }
+    return { error: 'Error when fetching user by username' };
   }
-}
+};
 
 /**
  * Authenticates a user by verifying their username and password.
@@ -51,9 +50,9 @@ export const getUserByUsername = async (username: string): Promise<UserResponse>
 export const loginUser = async (loginCredentials: UserCredentials): Promise<UserResponse> =>
   // TODO: Task 1 - Implement the loginUser function. Refer to other service files for guidance.
   {
-    try{
-      const {username, password} = loginCredentials;
-      const user = await UserModel.findOne({ username}).lean();
+    try {
+      const { username, password } = loginCredentials;
+      const user = await UserModel.findOne({ username }).lean();
 
       if (!user) {
         return { error: 'User not found' };
@@ -64,14 +63,14 @@ export const loginUser = async (loginCredentials: UserCredentials): Promise<User
       }
 
       if (user.password) {
-        const { password: _pw, ...safeUser } = user;
+        const { ...safeUser } = user;
         return safeUser;
       }
       return user;
     } catch (error) {
       return { error: 'Error during authentication' };
     }
-  }
+  };
 
 /**
  * Deletes a user from the database by their username.
@@ -79,26 +78,25 @@ export const loginUser = async (loginCredentials: UserCredentials): Promise<User
  * @param {string} username - The username of the user to delete.
  * @returns {Promise<UserResponse>} - Resolves with the deleted user object (without the password) or an error message.
  */
-export const deleteUserByUsername = async (username: string): Promise<UserResponse> =>{
+export const deleteUserByUsername = async (username: string): Promise<UserResponse> => {
   // TODO: Task 1 - Implement the deleteUserByUsername function. Refer to other service files for guidance.
   try {
     const deletedUser = await UserModel.findOneAndDelete({ username }).lean();
-    
+
     if (!deletedUser) {
       return { error: 'User not found' };
     }
 
     if (deletedUser.password) {
-      const { password, ...safeUser } = deletedUser;
+      const { ...safeUser } = deletedUser;
       return safeUser;
     }
-    
+
     return deletedUser;
   } catch (error) {
     return { error: 'Error when deleting user' };
   }
-}
-
+};
 
 /**
  * Updates user information in the database.
@@ -107,19 +105,20 @@ export const deleteUserByUsername = async (username: string): Promise<UserRespon
  * @param {Partial<User>} updates - An object containing the fields to update and their new values.
  * @returns {Promise<UserResponse>} - Resolves with the updated user object (without the password) or an error message.
  */
-export const updateUser = async (username: string, updates: Partial<User>): Promise<UserResponse> => {
+export const updateUser = async (
+  username: string,
+  updates: Partial<User>,
+): Promise<UserResponse> => {
   try {
-    const updatedUser = await UserModel.findOneAndUpdate(
-      { username },
-      updates,
-      { new: true}
-    ).lean();
+    const updatedUser = await UserModel.findOneAndUpdate({ username }, updates, {
+      new: true,
+    }).lean();
     if (!updatedUser) {
       return { error: 'User not found' };
     }
-    const { password, ...safeUser } = updatedUser;
+    const { ...safeUser } = updatedUser;
     return safeUser;
   } catch (error) {
     return { error: 'Error when updating user' };
   }
-}
+};

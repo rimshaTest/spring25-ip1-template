@@ -12,15 +12,15 @@ import { Schema } from 'mongoose';
 const userSchema: Schema = new Schema(
   // TODO: Task 1 - Define the schema for a user
   {
-    username:{
+    username: {
       type: String,
     },
-    password:{
+    password: {
       type: String,
     },
     dateJoined: {
       type: Date,
-    }
+    },
   },
   { collection: 'User' },
 );

@@ -33,7 +33,6 @@ describe('POST /addMessage', () => {
 
   it('should return bad request error if messageToAdd is missing', async () => {
     const response = await supertest(app).post('/messaging/addMessage').send({});
-    console.log(JSON.stringify(response));
 
     expect(response.status).toBe(400);
     expect(response.text).toBe('Invalid request');

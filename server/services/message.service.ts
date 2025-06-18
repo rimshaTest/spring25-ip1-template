@@ -17,18 +17,20 @@ export const saveMessage = async (message: Message): Promise<MessageResponse> =>
     } catch (error) {
       return { error: 'Error when saving a user' };
     }
-  }
+  };
 
 /**
  * Retrieves all messages from the database, sorted by date in ascending order.
  *
  * @returns {Promise<Message[]>} - An array of messages. If an error occurs, an empty array is returned.
  */
-export const getMessages = async (): Promise<Message[]> =>{
+export const getMessages = async (): Promise<Message[]> => {
   // Retrieves all messages sorted by date in ascending order
   try {
     const result = await MessageModel.find({}).exec();
-    return result.sort((a, b) => new Date(a.msgDateTime).getTime() - new Date(b.msgDateTime).getTime());
+    return result.sort(
+      (a, b) => new Date(a.msgDateTime).getTime() - new Date(b.msgDateTime).getTime(),
+    );
   } catch (err: unknown) {
     return [];
   }
