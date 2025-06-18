@@ -41,6 +41,7 @@ describe('Message model', () => {
       mockingoose(MessageModel).toReturn([message2, message1], 'find');
 
       const messages = await getMessages();
+      console.log(JSON.stringify(messages));
 
       expect(messages).toMatchObject([message1, message2]);
     });

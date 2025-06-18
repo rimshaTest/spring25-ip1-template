@@ -13,8 +13,16 @@ const messageController = (socket: FakeSOSocket) => {
    *
    * @returns `true` if the request is valid, otherwise `false`.
    */
-  const isRequestValid = (req: AddMessageRequest): boolean => false;
+  const isRequestValid = (req: AddMessageRequest): boolean => {
   // TODO: Task 2 - Implement the isRequestValid function
+    return (
+      req.body &&
+      req.body.messageToAdd &&
+      typeof req.body.messageToAdd.msg === "string" && req.body.messageToAdd.msg.trim().length > 0 &&
+      typeof req.body.messageToAdd.msgFrom === "string" && req.body.messageToAdd.msgFrom.trim().length > 0 &&
+      (typeof req.body.messageToAdd.msgDateTime === "string" || req.body.messageToAdd.msgDateTime instanceof Date)
+    );
+  }
 
   /**
    * Validates the Message object to ensure it contains the required fields.
@@ -23,7 +31,7 @@ const messageController = (socket: FakeSOSocket) => {
    *
    * @returns `true` if the message is valid, otherwise `false`.
    */
-  const isMessageValid = (message: Message): boolean => false;
+  const isMessageValid = (message: Message): boolean => (typeof message.msg === "string");
   // TODO: Task 2 - Implement the isMessageValid function
 
   /**
@@ -41,8 +49,34 @@ const messageController = (socket: FakeSOSocket) => {
      * Note: you will need to uncomment the line below. Refer to other controller files for guidance.
      * This emits a message update event to the client. When should you emit this event? You can find the socket event definition in the server/types/socket.d.ts file.
      */
-    // socket.emit('messageUpdate', { msg: msgFromDb });
-    res.status(501).send('Not implemented');
+    if (!isRequestValid(req)){
+      res.status(400).send('Invalid request');
+      return;
+    }
+    
+    if(!isMessageValid(req.body.messageToAdd)) {
+      res.status(400).send('Invalid message');
+      return;
+    }
+    const message: Message = req.body.messageToAdd;
+    try {
+      const msgFromDb = await saveMessage(message);
+      if ('error' in msgFromDb) {
+        throw new Error(msgFromDb.error);
+      }
+
+      socket.emit('messageUpdate', { msg: msgFromDb });
+      res.json(msgFromDb);
+      return;
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        res.status(500).send(`Error when saving message: ${err.message}`);
+        return;
+      } else {
+        res.status(500).send(`Error when saving message`);
+        return;
+      }
+    }
   };
 
   /**
@@ -53,7 +87,19 @@ const messageController = (socket: FakeSOSocket) => {
    */
   const getMessagesRoute = async (req: Request, res: Response): Promise<void> => {
     // TODO: Task 2 - Implement the getMessagesRoute function
-    res.status(501).send('Not implemented');
+    const message: Message = req.body.messageToAdd;
+    try {
+      const msgFromDb = await getMessages();
+      res.status(200).send(msgFromDb);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        res.status(500).send(`Error when saving message: ${err.message}`);
+        return;
+      } else {
+        res.status(500).send(`Error when saving message`);
+        return;
+      }
+    }
   };
 
   // Add appropriate HTTP verbs and their endpoints to the router
