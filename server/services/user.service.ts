@@ -10,6 +10,10 @@ import { User, UserCredentials, UserResponse } from '../types/types';
 export const saveUser = async (user: User): Promise<UserResponse> => {
   // TODO: Task 1 - Implement the saveUser function. Refer to other service files for guidance.
   try {
+    const existingUser = await UserModel.findOne({ username: user.username }).lean();
+    if (existingUser) {
+      return { error: 'User already exists' };
+    }
     const res = await UserModel.create(user);
     const plainUser = res.toObject();
     const { ...safeUser } = plainUser;
@@ -61,12 +65,8 @@ export const loginUser = async (loginCredentials: UserCredentials): Promise<User
       if (user.password && user.password !== password) {
         return { error: 'Password does not match' };
       }
-
-      if (user.password) {
-        const { ...safeUser } = user;
-        return safeUser;
-      }
-      return user;
+      const { ...safeUser } = user;
+      return safeUser;
     } catch (error) {
       return { error: 'Error during authentication' };
     }

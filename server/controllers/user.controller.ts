@@ -84,7 +84,8 @@ const userController = () => {
     try {
       const responsefromdb = await loginUser(user);
       if ('error' in responsefromdb) {
-        throw new Error(responsefromdb.error);
+        res.status(500).json({ error: responsefromdb.error });
+        return;
       }
       res.status(200).json(responsefromdb);
     } catch (err: unknown) {
@@ -105,10 +106,6 @@ const userController = () => {
   const getUser = async (req: UserByUsernameRequest, res: Response): Promise<void> => {
     // TODO: Task 1 - Implement the getUser function
     const { username } = req.params;
-    if (typeof username !== 'string') {
-      res.status(400).send('Username must be provided as a string');
-      return;
-    }
     try {
       const user: UserResponse = await getUserByUsername(username);
       if (!user) {
@@ -134,10 +131,6 @@ const userController = () => {
   const deleteUser = async (req: UserByUsernameRequest, res: Response): Promise<void> => {
     // TODO: Task 1 - Implement the deleteUser function
     const { username } = req.params;
-    if (typeof username !== 'string') {
-      res.status(400).send('Username must be provided as a string');
-      return;
-    }
     try {
       const user: UserResponse = await deleteUserByUsername(username);
       res.status(200).json(user);
@@ -166,7 +159,7 @@ const userController = () => {
     try {
       const responsefromdb = await updateUser(username, { password });
       if ('error' in responsefromdb) {
-        res.status(404).json({ error: responsefromdb.error });
+        res.status(500).json({ error: responsefromdb.error });
         return;
       }
 

@@ -39,6 +39,30 @@ describe('POST /addMessage', () => {
   });
 
   // TODO: Task 2 - Write additional test cases for addMessageRoute
+  it('should return an error if saving the message fails', async () => {
+    saveMessageSpy.mockRejectedValue(new Error('Database error'));
+
+    const response = await supertest(app)
+      .post('/messaging/addMessage')
+      .send({
+        messageToAdd: { msg: 'Hello', msgFrom: 'User1', msgDateTime: new Date().toISOString() },
+      });
+
+    expect(response.status).toBe(500);
+  });
+
+  it('should return a database error if saveMessage returns an error object', async () => {
+    saveMessageSpy.mockResolvedValue({ error: 'Some DB error' });
+
+    const response = await supertest(app)
+      .post('/messaging/addMessage')
+      .send({
+        messageToAdd: { msg: 'Hello', msgFrom: 'User1', msgDateTime: new Date().toISOString() },
+      });
+
+    expect(response.status).toBe(500);
+    expect(response.text).toBe('Database error');
+  });
 });
 
 describe('GET /getMessages', () => {

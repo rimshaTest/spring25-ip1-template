@@ -58,11 +58,13 @@ const messageController = (socket: FakeSOSocket) => {
       res.status(400).send('Invalid message');
       return;
     }
+
     const message: Message = req.body.messageToAdd;
     try {
       const msgFromDb = await saveMessage(message);
       if ('error' in msgFromDb) {
-        throw new Error(msgFromDb.error);
+        res.status(500).send('Database error');
+        return;
       }
 
       socket.emit('messageUpdate', { msg: msgFromDb });
